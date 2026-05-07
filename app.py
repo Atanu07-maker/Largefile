@@ -35,17 +35,14 @@ st.markdown("""
 # --- Load Models (Cached) ---
 @st.cache_resource
 def load_all_models():
-    # 1. Face Analysis - Use 's' (small) instead of 'l' (large) to save RAM
-    app = FaceAnalysis(name='buffalo_s', root='.') 
-    app.prepare(ctx_id=-1, det_size=(320, 320)) # Smaller det_size also saves memory
+    # Use 'buffalo_s' for lower RAM usage
+    app = FaceAnalysis(name='buffalo_s') 
+    app.prepare(ctx_id=-1, det_size=(640, 640))
     
-    # 2. The Swapper
-    model_path = os.path.join(os.getcwd(), 'inswapper_128.onnx')
-    swapper = insightface.model_zoo.get_model(model_path, download=False)
+    # Ensure the .onnx file is in your GitHub repo root!
+    swapper = insightface.model_zoo.get_model('inswapper_128.onnx', download=False)
     
-    # 3. The Restorer
     restorer = GFPGANer(model_path='https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth', upscale=1)
-    
     return app, swapper, restorer
 
 app, swapper, restorer = load_all_models()
