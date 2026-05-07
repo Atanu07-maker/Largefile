@@ -1,4 +1,4 @@
-
+import os
 import streamlit as st
 import cv2
 import numpy as np
@@ -24,8 +24,9 @@ def load_all_models():
     app = FaceAnalysis(name='buffalo_l')
     app.prepare(ctx_id=-1, det_size=(640, 640)) # ctx_id -1 uses CPU, 0 uses GPU
     
-    # 2. The Swapper
-    swapper = insightface.model_zoo.get_model('inswapper_128.onnx', download=False)
+
+    model_path = os.path.join(os.getcwd(), 'inswapper_128.onnx')
+    swapper = insightface.model_zoo.get_model(model_path, download=False)
     
     # 3. The Restorer (This makes it "Perfect")
     # It will auto-download a small file (~300MB) on first run
