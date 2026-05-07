@@ -40,7 +40,7 @@ def load_all_models():
         os.makedirs('weights')
 
     # 1. Face Analysis
-    app = FaceAnalysis(name='buffalo_l', root='.') # Tell it to look in current folder
+    app = FaceAnalysis(name='buffalo_s', root='.') # Tell it to look in current folder
     app.prepare(ctx_id=-1, det_size=(640, 640))
     
     # 2. The Swapper (Explicit path to your uploaded file)
