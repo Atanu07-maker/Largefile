@@ -1,6 +1,21 @@
 import os
+import sys
+from types import ModuleType
+
+# Fix basicsr bug: it looks for a module that moved in newer torchvision
+try:
+    import torchvision.transforms.functional_tensor as T
+except ImportError:
+    # Create a fake module to satisfy the import
+    mock_module = ModuleType("torchvision.transforms.functional_tensor")
+    sys.modules["torchvision.transforms.functional_tensor"] = mock_module
+    import torchvision.transforms.functional as F
+    # Map the functions basicsr expects
+    mock_module.rgb_to_grayscale = F.rgb_to_grayscale
+
 import streamlit as st
 import cv2
+# ... (rest of your imports)
 import numpy as np
 import insightface
 from insightface.app import FaceAnalysis
