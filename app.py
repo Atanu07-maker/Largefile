@@ -35,17 +35,27 @@ st.markdown("""
 # --- Load Models (Cached) ---
 @st.cache_resource
 def load_all_models():
-    # 1. Face Analysis (High-res detection)
-    app = FaceAnalysis(name='buffalo_l')
-    app.prepare(ctx_id=-1, det_size=(640, 640)) # ctx_id -1 uses CPU, 0 uses GPU
-    
+    # Create a local directory for weights if it doesn't exist
+    if not os.path.exists('weights'):
+        os.makedirs('weights')
 
+    # 1. Face Analysis
+    app = FaceAnalysis(name='buffalo_l', root='.') # Tell it to look in current folder
+    app.prepare(ctx_id=-1, det_size=(640, 640))
+    
+    # 2. The Swapper (Explicit path to your uploaded file)
     model_path = os.path.join(os.getcwd(), 'inswapper_128.onnx')
     swapper = insightface.model_zoo.get_model(model_path, download=False)
     
-    # 3. The Restorer (This makes it "Perfect")
-    # It will auto-download a small file (~300MB) on first run
-    restorer = GFPGANer(model_path='https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth', upscale=1)
+    # 3. The Restorer (Force it to download to our 'weights' folder)
+    # We use model_path directly to a local destination
+    restorer = GFPGANer(
+        model_path='https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth', 
+        upscale=1, 
+        arch='clean', 
+        channel_multiplier=2, 
+        bg_upsampler=None
+    )
     
     return app, swapper, restorer
 
